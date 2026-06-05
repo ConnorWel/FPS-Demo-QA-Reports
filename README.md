@@ -9,7 +9,7 @@ This repository contains the Quality Assurance documentation, bug tracking logs,
 
 | Bug ID | Title / Summary | Module / System | Severity | Status | Steps to Reproduce | Expected vs Actual Result |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **BUG-001** | [Animator] Rapid right-click for ADS causes transition lock and weapon clipping | Animation / Weapon | High | 🟢 Closed | 1. Rapidly click right-mouse button within 0.2s.<br>2. Observe animation state. | **Exp:** Smooth blend back to Hip-fire.<br>**Act:** Stucks in between, weapon clips. |
+| **BUG-001** | [Animato r] Rapid right-click for ADS causes transition lock and weapon clipping | Animation / Weapon | High | 🟢 Closed | 1. Rapidly click right-mouse button within 0.2s.<br>2. Observe animation state. | **Exp:** Smooth blend back to Hip-fire.<br>**Act:** Stucks in between, weapon clips. |
 | **BUG-002** | [Object Pool] Bullets failing to return to pool on hitting geometry with custom shader | VFX / Combat | Medium | 🟢 Closed | 1. Fire weapon at walls with 'Dissolve' shader.<br>2. Check Hierarchy. | **Exp:** Deactivated and returned to pool.<br>**Act:** Leaks memory, instances grow. |
 | **BUG-003** | [Controller] Jump physics conflicts with rotation interpolation on slope angles > 45° | Physics / Movement | High | 🟢 Closed | 1. Walk up a 45 degree slope.<br>2. Press Jump while turning 180 degrees. | **Exp:** Normal jump arc.<br>**Act:** Character snaps rotation and falls through mesh. |
 | **BUG-004** | [UI] Ammo counter text string format throws deprecation warning | UI / System | Low | 🟢 Closed | 1. Launch game.<br>2. View Console logs during reloading. | **Exp:** Clean log output.<br>**Act:** Deprecation warning for API. |
@@ -25,9 +25,9 @@ This repository contains the Quality Assurance documentation, bug tracking logs,
 
 # BUG-015: [Weapon/Animator] Magazine clips/floats during reload; backend logic executes but animation fails to play
 
-**Reporter:** [Your Name]
+**Reporter:** [Connor Wei]
 **Date:** 2026-06-05
-**Environment/Version:** Unity 2023.x / Windows 11
+**Environment/Version:** Unity 2026 / Windows 11
 **Module:** Weapon System / Animator
 
 ## 1. Severity & Priority
