@@ -23,7 +23,7 @@ This repository contains the Quality Assurance documentation, bug tracking logs,
 ---
 *Note: Detailed reports and test cases for specific systems (e.g., AI Pathfinding, Weapon Mechanics) can be found in the attached PDF portfolios.*
 
-# BUG-015: [Weapon/Animator] Magazine clips/floats during reload; backend logic executes but animation fails to play
+# BUG-05: [Weapon/Animator] Magazine clips/floats during reload; backend logic executes but animation fails to play
 
 **Reporter:** [Connor Wei]
 **Date:** 2026-06-05
@@ -55,3 +55,72 @@ The Animator should immediately respond to the reload input alongside the C# log
 - **Animator State Machine:** The C# script might be successfully calling `animator.SetTrigger("Reload")`, but the transition in the Animator Controller (e.g., from `Any State` or `Idle` to `Reload`) is not properly configured or the transition conditions are not met.
 - **Layer Weights:** If the reload animation is on a separate Animation Layer, its Weight might be unintentionally set to 0.
 - **Missing References:** The AnimationClip itself might have lost the binding path/reference to the magazine model's Transform.
+
+- # BUG-006: [AI/NavMesh] Spider-bot gets stuck on stair edges and repeatedly triggers anti-stuck jump mechanism
+
+**Reporter:** [Connor Wei]
+**Date:** 2026-06-06
+**Environment/Version:** Unity 2026 / Windows 11
+**Module:** AI / Navigation System
+
+## 1. Severity & Priority
+- **Severity:** Medium - The game does not crash, but the AI combat loop is broken, rendering the enemy completely ineffective in specific terrain.
+- **Priority:** P2
+
+## 2. Pre-conditions
+- Player is in Play Mode on `Test_Scene_01`.
+- The Spider-bot enemy is spawned and active.
+- Player is positioned on a raised platform or at the top of a staircase.
+- NavMesh is baked, but the stair step height/slope is discontinuous.
+
+## 3. Steps to Reproduce
+1. Fire a weapon to alert the Spider-bot and trigger its `Chase` state.
+2. Stand at the top of the stairs and wait for the Spider-bot to navigate towards the player.
+3. Observe the Spider-bot's behavior as it reaches the bottom edge of the staircase.
+
+## 4. Actual Result
+The Spider-bot reaches the edge of the stairs and stops moving forward. Because its forward velocity drops to near zero but the destination is not reached, the custom `EnemyControl.cs` anti-stuck logic is triggered. The bot executes a vertical jump, but lands back in the exact same invalid NavMesh position, causing it to spam the jump animation infinitely while trapped at the stair base.
+
+## 5. Expected Result
+The Spider-bot should smoothly traverse the stairs using the NavMesh. If a jump is intentionally required to clear an obstacle, the anti-stuck jump logic should apply a forward physical impulse to clear the gap, or properly utilize an Off-Mesh Link, allowing the bot to resume its pathfinding after landing.
+
+## 6. Investigation Notes & Stack Trace
+*QA Investigation:*
+- **NavMesh Bake Settings:** Checked the Navigation window. The `Max Slope` and `Step Height` parameters might be set too low for the specific stair geometry, causing the NavMesh surface to break at the steps.
+- **Code Logic:** Reviewed `EnemyControl.cs`. The anti-stuck mechanism only adds `linearVelocity` on the Y-axis. 
+- **Recommendation:** Re-bake the NavMesh with adjusted Step Height, or add an Off-Mesh Link for the stairs. Additionally, add a short cooldown (e.g., 2 seconds) to the jump trigger in the script to prevent animation spamming.
+
+# BUG-009: [Weapon/Script] Recoil calculation throws NullReferenceException when switching weapons mid-fire
+
+**Reporter:** [Connor Wei]
+**Date:** 2026-06-06
+**Environment/Version:** Unity 2026 / Windows 11
+**Module:** Weapon System / Core Logic
+
+## 1. Severity & Priority
+- **Severity:** High - Causes a script execution halt. The camera recoil logic freezes permanently, and subsequent weapon firing mechanics break until the scene is reloaded.
+- **Priority:** P1
+
+## 2. Pre-conditions
+- Player is in Play Mode.
+- Player has at least two weapons equipped (e.g., Assault Rifle and Pistol).
+- Assault Rifle is currently active in hands.
+
+## 3. Steps to Reproduce
+1. Hold down the Left Mouse Button (LMB) to fire the Assault Rifle continuously.
+2. While still holding LMB (mid-burst), scroll the mouse wheel to instantly switch to the secondary weapon.
+3. Release LMB and attempt to fire the new weapon.
+4. Open the Unity Console.
+
+## 4. Actual Result
+The game stutters for a frame. The recoil camera shake locks up at an offset position. Attempting to fire the newly equipped weapon fails. The Unity Console outputs a continuous stream of `NullReferenceException` errors.
+
+## 5. Expected Result
+Switching weapons should cleanly interrupt the firing state of the current weapon. The recoil calculation Coroutine or Update loop should terminate gracefully before the active weapon object is disabled or destroyed, allowing the new weapon to function normally.
+
+## 6. Investigation Notes & Stack Trace
+*QA Investigation & Console Output:*
+```text
+NullReferenceException: Object reference not set to an instance of an object
+at RecoilSystem.ApplyRecoil() in Assets/Scripts/Weapons/RecoilSystem.cs:line 45
+at WeaponController.Update() in Assets/Scripts/Weapons/WeaponController.cs:line 112
