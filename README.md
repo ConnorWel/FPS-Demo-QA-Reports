@@ -129,6 +129,10 @@ at RecoilSystem.ApplyRecoil() in Assets/Scripts/Weapons/RecoilSystem.cs:line 45
 at WeaponController.Update() in Assets/Scripts/Weapons/WeaponController.cs:line 112
 
 
+
+
+
+
 # **BUG-011: [Weapon/Transform] Pistol mesh detaches and floats outside character's hand during reload animation**
 
 **Reporter:** [Connor Wei]
