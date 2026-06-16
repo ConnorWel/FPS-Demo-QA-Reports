@@ -131,7 +131,7 @@ at WeaponController.Update() in Assets/Scripts/Weapons/WeaponController.cs:line 
 
 
 
-
+```
 
 # **BUG-011: [Weapon/Transform] Pistol mesh detaches and floats outside character's hand during reload animation**
 
